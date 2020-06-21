@@ -1,0 +1,10 @@
+#ignores
+.git/
+/..*.kate.swp
+/test*.sh
+.idea/
+/.directory
+/*.txt
+/TODO.md
+.fuse_hidden*
+.~lock*
