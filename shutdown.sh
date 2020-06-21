@@ -66,7 +66,7 @@ action=poweroff
 exc1=0
 
 OPTIONS=rshyt:
-LONGOPTIONS=reboot,suspend,hibernate,hybrid-sleep,contdown:
+LONGOPTIONS=reboot,suspend,hibernate,hybrid-sleep,countdown:
 
 ! PARSED=$(getopt --options=$OPTIONS --longoptions=$LONGOPTIONS --name "$0" -- "$@")
 
@@ -84,7 +84,7 @@ while true; do
       -s | --suspend)      action=suspend;      ((exc1++)); shift;;
       -h | --hibernate)    action=hibernate;    ((exc1++)); shift;;
       -y | --hybrid-sleep) action=hybrid-sleep; ((exc1++)); shift;;
-      -t | --contdown)
+      -t | --countdown)
         time="$2"
         shift 2;;
       --) shift ; break ;;
@@ -97,7 +97,7 @@ if (($# != 1)); then
 fi
 
 if ((exc1 > 1)); then
-  echo "Error: -h, -i and -s are mutually exclusive and may only be used once" >&2
+  echo "Error: -r, -s, -h and -y are mutually exclusive and may only be used once" >&2
   exit 1
 fi
 
