@@ -1,4 +1,4 @@
-#!/bin/bash -x
+#!/bin/bash +x
 
 # FUNCTIONS
 function format_time() {
@@ -36,12 +36,16 @@ function verify() {
 
 
 function time_parser() {
-  local unit=${1: -1}
-  local value=${1:0:-1}
-  #declare -i seconds
-  if ! isnumber value; then
-    echo "Error: Invalid unit time"
-    exit 1
+  if ! isnumber "$1"; then
+    local unit=${1: -1}
+    local value=${1:0:-1}
+    if ! isnumber value; then
+      echo "Error: Invalid unit time"
+      exit 1
+    fi
+  else
+    local unit=s
+    local value=$1
   fi
 
   case $unit in
@@ -72,7 +76,7 @@ LONGOPTIONS=reboot,suspend,hibernate,hybrid-sleep,countdown:
 
 if ((PIPESTATUS[0] != 0)); then
   echo "Error: Invalid parameter"
-  echo mecawendios este es el uso
+  echo "Usage"
   exit 1
 fi
 
@@ -92,6 +96,8 @@ while true; do
     esac
 done
 
+echo "PARSED: $PARSED"
+echo "$#"
 if (($# != 1)); then
     time=30s
 fi
@@ -100,8 +106,6 @@ if ((exc1 > 1)); then
   echo "Error: -r, -s, -h and -y are mutually exclusive and may only be used once" >&2
   exit 1
 fi
-
-echo "PARSED $PARSED"
 
 ############################
 time_parser "$time"
@@ -115,3 +119,8 @@ while (("$total_seconds" >= "$EPOCHSECONDS")); do
 done
 
 echo systemctl $action -i
+
+# Usage
+# shutdown {-r | -s | -h | -y} [-t time]
+# time must be expressed with the following suffixes:
+# s=seconds, m=minutes,
