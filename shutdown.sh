@@ -109,9 +109,9 @@ total_seconds=$((EPOCHSECONDS + seconds))
 
 echo "Scheduled $action: $(date -d @"$total_seconds")"
 
-while [ "$total_seconds" -ge "$EPOCHSECONDS" ]; do
+while (("$total_seconds" >= "$EPOCHSECONDS")); do
   r=$((total_seconds - EPOCHSECONDS))
   printr "$action in: $(format_time $r)" 1
 done
 
-systemctl $action -i
+echo systemctl $action -i
