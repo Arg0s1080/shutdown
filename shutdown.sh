@@ -1,4 +1,4 @@
-#!/bin/bash +x
+#!/bin/bash
 
 # FUNCTIONS
 function format_time() {
@@ -97,9 +97,9 @@ while true; do
 done
 
 echo "PARSED: $PARSED"
-echo "$#"
-if (($# != 1)); then
-    time=30s
+
+if [ -z "$time"  ]; then
+    echo hola
 fi
 
 if ((exc1 > 1)); then
@@ -108,7 +108,12 @@ if ((exc1 > 1)); then
 fi
 
 ############################
+if [ -z "$time" ]; then
+  time=90m # Default
+fi
+
 time_parser "$time"
+
 total_seconds=$((EPOCHSECONDS + seconds))
 
 echo "Scheduled $action: $(date -d @"$total_seconds")"
