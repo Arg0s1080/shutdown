@@ -123,9 +123,23 @@ while (("$total_seconds" >= "$EPOCHSECONDS")); do
   printr "$action in: $(format_time $r)" 1
 done
 
-echo systemctl $action -i
+systemctl $action -i
 
-# Usage
-# shutdown {-r | -s | -h | -y} [-t time]
-# time must be expressed with the following suffixes:
-# s=seconds, m=minutes,
+# Usage:
+#   shutdown {-r | -s | -h | -y} [-t TIME]
+#
+# Options:
+#   -r  --reboot          Shutdown and reboot the system
+#   -s  --suspend         Suspend the system
+#   -h  --hybernate       Hybernate the system
+#   -y  --hybrid-sleep    Hibernate and suspend the system
+#
+#   -t                    Start a countdown
+#
+# Note:
+# TIME must be expressed with the following suffixes:
+# s=seconds, m=minutes, h=hours, d=days
+#
+# Examples:
+# shutdown -t 2h  # Shutdown the system after 2 hours
+# shutdown -s -t 20m #Suspend the system after 20 minutes
