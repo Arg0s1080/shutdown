@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -x
 
 # FUNCTIONS
 function format_time() {
@@ -36,16 +36,12 @@ function verify() {
 
 
 function time_parser() {
-  if ! isnumber "$1"; then
-    local unit=${1: -1}
-    local value=${1:0:-1}
-    if ! isnumber value; then
-      echo "Error: Invalid unit time"
-      exit 1
-    fi
-  else
-    local unit=s
-    local value=$1
+  local unit=${1: -1}
+  local value=${1:0:-1}
+  #declare -i seconds
+  if ! isnumber value; then
+    echo "Error: Invalid unit time"
+    exit 1
   fi
 
   case $unit in
@@ -84,6 +80,7 @@ eval set -- "$PARSED"
 
 while true; do
     case $1 in
+      -p | --poweroff)     action=poweroff;     ((exc1++)); shift;;
       -r | --reboot)       action=reboot;       ((exc1++)); shift;;
       -s | --suspend)      action=suspend;      ((exc1++)); shift;;
       -h | --hibernate)    action=hibernate;    ((exc1++)); shift;;
@@ -96,43 +93,44 @@ while true; do
     esac
 done
 
-echo "PARSED: $PARSED"
-
-if [ -z "$time"  ]; then
-    echo hola
-fi
-
 if ((exc1 > 1)); then
-  echo "Error: -r, -s, -h and -y are mutually exclusive and may only be used once" >&2
+  echo "Error: -h, -y and -s are mutually exclusive and may only be used once" >&2
   exit 1
 fi
 
+# Debug:
+# echo "PARSED $PARSED"
+
 ############################
-if [ -z "$time" ]; then
-  time=90m # Default
+if [ -z "$time"  ]; then
+    time=90m # Default
 fi
 
 time_parser "$time"
-
 total_seconds=$((EPOCHSECONDS + seconds))
 
 echo "Scheduled $action: $(date -d @"$total_seconds")"
 
-while (("$total_seconds" >= "$EPOCHSECONDS")); do
+while [ "$total_seconds" -ge "$EPOCHSECONDS" ]; do
   r=$((total_seconds - EPOCHSECONDS))
   printr "$action in: $(format_time $r)" 1
 done
 
+
 systemctl $action -i
+# amixer set Master 0%  # Mute volume
 
 # Usage:
 #   shutdown {-r | -s | -h | -y} [-t TIME]
 #
 # Options:
+#   -p  --poweroff        Shutdown the system
 #   -r  --reboot          Shutdown and reboot the system
 #   -s  --suspend         Suspend the system
 #   -h  --hybernate       Hybernate the system
 #   -y  --hybrid-sleep    Hibernate and suspend the system
+#   Note: if no param "-p" will be used by default.
+#         So: shutdown -t 1h == shutdown -p -t 1h
 #
 #   -t                    Start a countdown
 #
